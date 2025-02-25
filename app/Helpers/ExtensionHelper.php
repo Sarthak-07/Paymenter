@@ -11,6 +11,7 @@ use App\Models\Server;
 use App\Models\Service;
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 
 class ExtensionHelper
 {
@@ -56,6 +57,17 @@ class ExtensionHelper
         }
 
         return new $extension($config);
+    }
+
+    public static function getDocumentation(): ?string
+    {
+        $readmePath = base_path("extensions/Gateways/Cashfree/README.md");
+    
+        if (File::exists($readmePath)) {
+            return File::get($readmePath);
+        }
+    
+        return null;
     }
 
     /**

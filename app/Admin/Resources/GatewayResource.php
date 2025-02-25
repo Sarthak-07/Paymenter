@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -40,6 +41,7 @@ class GatewayResource extends Resource
     {
         $gateways = \App\Helpers\ExtensionHelper::getAvailableGateways();
         $options = \App\Helpers\ExtensionHelper::convertToOptions($gateways);
+        $documentation = \App\Helpers\ExtensionHelper::getDocumentation();
 
         return $form
             ->schema([
@@ -62,6 +64,19 @@ class GatewayResource extends Resource
                         ->getChildComponentContainer()
                         ->fill())
                     ->placeholder('Select the type of the gateway'),
+
+                Section::make('Documentation')
+                    ->schema([
+                        MarkdownEditor::make('description')
+                            ->label('README.md')
+                            ->afterStateHydrated(fn ($component) => $component->state($documentation))
+                            ->disabled()
+                    ])
+                    ->collapsible()
+                    ->collapsed()
+                    ->hidden(fn() => empty($documentation)),
+                // this is $documentation = \App\Helpers\ExtensionHelper::getDocumentation();
+
                 Section::make('Gateway Settings')
                     ->description('Specific settings for the selected gateway')
                     ->schema([
